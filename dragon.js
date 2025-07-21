@@ -1,6 +1,8 @@
     let cross=true;
     let score = 0;
     let isGameOver=false;
+    const gameOverSound=new Audio('./sound/game-over-deep-male-voice-clip-352695.mp3');
+    const scoreAcheiveSound=new Audio('./sound/game-start-317318.mp3')
     document.onkeydown=function(e){
     console.log("keyCode is ",e.key)
     const dino=document.querySelector('.dino');
@@ -11,6 +13,7 @@
         if(gameOver.style.visibility==="visible"){
             score=0;
             updateScore(score)
+            isGameOver=false
         }
         dino.classList.add('animateDino');
         obstacle.classList.add('obstacleAni');
@@ -22,13 +25,17 @@
      if(e.key==='ArrowRight'){
 
        let dinox=parseInt(window.getComputedStyle(dino,null).getPropertyValue('left'));
-        dino.style.left=dinox+212+'px';
+        if (dinox < window.innerWidth - 200) {  // 200 = dino width + margin buffer
+            dino.style.left = dinox + 212 + "px";
+        }
         
     }
     if(e.key==='ArrowLeft'){
 
        let dinox=parseInt(window.getComputedStyle(dino,null).getPropertyValue('left'));
-        dino.style.left=(dinox-212)+'px';
+        if (dinox > 0) {
+            dino.style.left = dinox - 212 + "px";
+        }
         
     }
 }
@@ -51,14 +58,16 @@ setInterval(() => {
     offsetX=Math.abs(dx-ox);
     offsetY=Math.abs(dy-oy);
     if(offsetX<70&&offsetY<10){
+        isGameOver = true;
         gameOver.style.visibility='visible';
         obstacle.classList.remove('obstacleAni');
-        updateScore(score)
-        isGameOver = true;
+        // gameOverSound.play()
+        updateScore(score);
     }
-    else if(offsetX < 123 && cross && !isGameOver){
+    else if(offsetX < 130 && cross && !isGameOver){
         score+=5;
         updateScore(score);
+        scoreAcheiveSound.play();
         cross=false;
         setTimeout(() => {
             cross=true;
@@ -72,6 +81,7 @@ setInterval(() => {
 
 const updateScore=(s)=>{
     const scorecnt=document.querySelector('.score');
+    
     scorecnt.innerHTML="score "+s;
      
     
